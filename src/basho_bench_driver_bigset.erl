@@ -34,6 +34,7 @@
 
 -record(state, { client,
                  last_key=undefined,
+                 set_val_gen_name = undefined,
                  remove_set, %% The set name to perform a remove on
                  remove_ctx, %% The context of a get from `remove_set'
                  remove_value, %% The values from a get to `remove_set'
@@ -58,6 +59,7 @@ new(Id) ->
     Cookie  = basho_bench_config:get(bigset_cookie, 'bigset'),
     MyNode  = basho_bench_config:get(bigset_mynode, [basho_bench, longnames]),
     BatchSize = basho_bench_config:get(bigset_batchsize, 1000),
+    SetValGen = basho_bench_config:get(bigset_valgen_name, a),
 
     %% Try to spin up net_kernel
     case net_kernel:start(MyNode) of
@@ -83,7 +85,8 @@ new(Id) ->
         {error, Reason2} ->
             ?FAIL_MSG("Failed get a bigset_client to ~p: ~p\n", [TargetNode, Reason2]);
         Client ->
-            {ok, #state { client = Client, batch_size=BatchSize }}
+            {ok, #state { client = Client, batch_size=BatchSize,
+                          set_val_gen_name=SetValGen }}
     end.
 
 run(read, KeyGen, _ValueGen, State) ->
@@ -138,7 +141,8 @@ run(insert_pl, KeyGen, ValueGen, State) ->
             {error, Reason, State2}
     end;
 run(batch_insert, KeyGen, ValueGen, State) ->
-    #state{client=C, batch_size=BatchSize, last_key=LastKey0} = State,
+    #state{client=C, batch_size=BatchSize, last_key=LastKey0,
+           set_val_gen_name=SVGN} = State,
 
     {Set, Members} = case {LastKey0, gen_members(BatchSize, ValueGen)} of
                          {_, []} ->
@@ -146,7 +150,7 @@ run(batch_insert, KeyGen, ValueGen, State) ->
                              Key = KeyGen(),
 
                              ?DEBUG("New set after exhausted ~p~n", [Key]),
-                             basho_bench_keygen:reset_sequential_int_state(),
+                             basho_bench_keygen:reset_sequential_int_state(SVGN),
                              {Key, gen_members(BatchSize, ValueGen)};
                          {undefined, List} ->
                              %% We have no active set, so generate a
