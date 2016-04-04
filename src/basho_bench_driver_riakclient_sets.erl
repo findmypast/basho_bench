@@ -70,7 +70,7 @@ new(Id) ->
     MyNode  = basho_bench_config:get(riakclient_mynode, [basho_bench, longnames]),
     Bucket  = basho_bench_config:get(riakclient_bucket, {<<"sets">>, <<"test">>}),
     BatchSize = basho_bench_config:get(riakclient_sets_batchsize, 1000),
-    SetValGenName = basho_bench_config:get(riakclient_sets_valgen_name, a),
+    SetValGenName = basho_bench_config:get(riakclient_sets_valgen_name, undefined),
     Preload = basho_bench_config:get(riakclient_preload_sets, false),
     PreloadNum = basho_bench_config:get(riakclient_preload_sets_num, 10),
     MaxValsForPreloadSet = basho_bench_config:get(
