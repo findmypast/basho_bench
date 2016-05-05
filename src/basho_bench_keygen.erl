@@ -196,6 +196,8 @@ new(List, _Id) when is_list(List) ->
 new(Other, _Id) ->
     ?FAIL_MSG("Invalid key generator requested: ~p\n", [Other]).
 
+dimension({int_to_str_with_prefix, _Prefix, InputGen}) ->
+    dimension(InputGen);
 dimension({int_to_str, InputGen}) ->
     dimension(InputGen);
 dimension({int_to_bin, InputGen}) ->
