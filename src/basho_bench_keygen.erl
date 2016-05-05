@@ -35,6 +35,13 @@
 %% ====================================================================
 %% API
 %% ====================================================================
+new({int_to_str_with_prefix, Prefix, InputGen}, Id) ->
+  Gen = new(InputGen, Id),
+  fun() -> io_lib:format("~s~p", Prefix, [Gen()]) end;
+%%
+%%    Gen = new(InputGen, Id),
+%%    fun() -> integer_to_list(Gen()) end;
+
 new({int_to_bin, _InputGen}, _Id) ->
     ?WARN("The int_to_bin key generator wrapper is NO LONGER SUPPORTED.\n"
           "Please use the "
@@ -178,7 +185,7 @@ new({file_line_bin, Path, DoRepeat}, Id) ->
                     Bin
             end
     end;
-%% Adapt a value generator. The function keygen would work if Id was added as 
+%% Adapt a value generator. The function keygen would work if Id was added as
 %% the last parameter. But, alas, it is added as the first.
 new({valgen, ValGen}, Id) ->
     basho_bench_valgen:new(ValGen, Id);
