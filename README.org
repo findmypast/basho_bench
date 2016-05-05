@@ -27,7 +27,7 @@
    to build the project.
 
 #+BEGIN_SRC shell
-git clone git://github.com/basho/basho_bench.git
+git clone git@github.com:basho/basho_bench.git
 cd basho_bench
 make all
 #+END_SRC
